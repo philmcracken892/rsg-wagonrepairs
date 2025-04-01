@@ -1,6 +1,6 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 
--- Function to get the model name from a vehicle entity
+
 local function getModelName(vehicle)
     local model = GetEntityModel(vehicle)
     local modelName = nil
@@ -31,7 +31,7 @@ function table.contains(table, element)
     return false
 end
 
--- Function to show wheel selection menu
+
 local function showWheelSelectionMenu(callback)
     local options = {
         { value = '0', label = 'Front Left Wheel' },
@@ -50,7 +50,7 @@ local function showWheelSelectionMenu(callback)
     end
 end
 
--- Track when the player gets in or out of a wagon
+
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(500)
@@ -116,7 +116,7 @@ Citizen.CreateThread(function()
         }
     }
     
-    -- Add these interactions to all vehicles or specific wagon models
+    
     if Config.TargetAllVehicles then
         exports['ox_target']:addGlobalVehicle(wagonInteractions)
     else
@@ -135,7 +135,7 @@ AddEventHandler('rsg-wagon:detachWheelMenu', function(vehicle)
         return
     end
     
-    -- Removed job requirement check
+    
     
     showWheelSelectionMenu(function(wheelIndex)
         TriggerEvent('rsg-wagon:detachWheel', vehicle, wheelIndex)
@@ -164,11 +164,11 @@ AddEventHandler('rsg-wagon:detachWheel', function(vehicle, wheelIndex)
             combat = true,
         },
     }) then
-        -- Get vehicle position and wheelIndex before detaching
+        
         local vehicleCoords = GetEntityCoords(vehicle)
         local vehicleHeading = GetEntityHeading(vehicle)
         
-        -- Define a more precise wheel position based on vehicle orientation
+        
         local wheelOffset = {x = 0, y = 0, z = 0}
         if wheelIndex == 0 then -- Front Left
             -- Adjust these values based on testing
@@ -177,7 +177,7 @@ AddEventHandler('rsg-wagon:detachWheel', function(vehicle, wheelIndex)
             wheelOffset = {x = 1.0, y = 1.5, z = -0.5}
         end
         
-        -- Calculate wheel position accounting for vehicle rotation
+        
         local rad = math.rad(vehicleHeading)
         local rotatedX = wheelOffset.x * math.cos(rad) - wheelOffset.y * math.sin(rad)
         local rotatedY = wheelOffset.x * math.sin(rad) + wheelOffset.y * math.cos(rad)
@@ -188,16 +188,16 @@ AddEventHandler('rsg-wagon:detachWheel', function(vehicle, wheelIndex)
             vehicleCoords.z + wheelOffset.z
         )
         
-        -- Detach the wheel
+        
         Citizen.InvokeNative(0xD4F5EFB55769D272, vehicle, wheelIndex)
         
-        -- Wait a moment for the wheel entity to fully spawn
+        
         Citizen.Wait(1000)
         
-        -- Attempt to find and delete wheel using multiple approaches
+       
         local wheelDeleted = false
         
-        -- Method 1: Try to find nearby wheel objects
+       
         local radius = 5.0
         local objects = GetGamePool('CObject')
         for _, object in ipairs(objects) do
@@ -224,7 +224,7 @@ AddEventHandler('rsg-wagon:detachWheel', function(vehicle, wheelIndex)
             end
         end
         
-        -- Method 2: If Method 1 failed, delete all recently created objects near the vehicle
+       
         if not wheelDeleted then
             Citizen.Wait(200)
             local newObjects = GetGamePool('CObject')
@@ -243,7 +243,7 @@ AddEventHandler('rsg-wagon:detachWheel', function(vehicle, wheelIndex)
             end
         end
         
-        -- Method 3: Delete all entities at the exact expected wheel position
+        
         if not wheelDeleted then
             -- This is a last resort approach
             local entityHandle, closestEntity = FindFirstObject()
@@ -266,7 +266,7 @@ AddEventHandler('rsg-wagon:detachWheel', function(vehicle, wheelIndex)
             EndFindObject(entityHandle)
         end
         
-        -- Add wheel to inventory regardless
+        
         TriggerServerEvent('rsg-wagon:addWheelToInventory', wheelIndex)
         
         if wheelDeleted then
@@ -283,7 +283,7 @@ end)
 
 
 
--- Vehicle lock/unlock functionality
+
 RegisterNetEvent('rsg-wagon:toggleLock')
 AddEventHandler('rsg-wagon:toggleLock', function(vehicle)
     if not DoesEntityExist(vehicle) or not IsEntityAVehicle(vehicle) then
@@ -295,7 +295,7 @@ AddEventHandler('rsg-wagon:toggleLock', function(vehicle)
     local playerCoords = GetEntityCoords(playerPed)
     local vehicleCoords = GetEntityCoords(vehicle)
     
-    -- Check if player is close enough to the vehicle
+    
     if #(playerCoords - vehicleCoords) > 3.0 then
         
         return
@@ -303,7 +303,7 @@ AddEventHandler('rsg-wagon:toggleLock', function(vehicle)
     
     local netId = NetworkGetNetworkIdFromEntity(vehicle)
     
-    -- Check ownership with the server
+    
     TriggerServerEvent('rsg-wagon:checkOwnership', netId)
 end)
 
@@ -326,7 +326,7 @@ AddEventHandler('rsg-wagon:ownershipResult', function(netId, isOwner)
     end
 end)
 
--- Wagon management events
+
 RegisterNetEvent('rsg-wagon:wagonSpawned')
 AddEventHandler('rsg-wagon:wagonSpawned', function(vehicle, modelName)
     TriggerServerEvent('rsg-wagon:markWagonOut', modelName)
@@ -343,7 +343,7 @@ end)
 
 
 
--- Wagon repair functionality
+
 RegisterNetEvent('rsg-wagon:repair')
 AddEventHandler('rsg-wagon:repair', function(wagon)
     if not wagon or not DoesEntityExist(wagon) or not IsEntityAVehicle(wagon) then
@@ -378,12 +378,12 @@ AddEventHandler('rsg-wagon:startRepair', function(wagon)
         
         
 
-        -- Notify server that repair is finished
+        
         TriggerServerEvent('rsg-wagon:finishRepair', wagon)
 		TriggerServerEvent('rsg-wagon:removeWheelFromInventory')
     end
 
-    -- Clear player animation tasks after progress (either success or cancel)
+    
     ClearPedTasks(playerPed)
 end)
 
@@ -408,7 +408,7 @@ AddEventHandler('rsg-wagon:completeRepair', function(wagon)
                 Wait(500)
             end
 
-            -- Create a new vehicle
+            
             local newVehicle = CreateVehicle(model, coords.x, coords.y, coords.z, heading, true, false)
             
             -- Set the new vehicle's properties
@@ -420,13 +420,13 @@ AddEventHandler('rsg-wagon:completeRepair', function(wagon)
             SetVehicleLights(newVehicle, 0)
             SetVehicleEngineOn(newVehicle, true, true)
 
-            -- Unlock the vehicle
+           
             SetVehicleDoorsLocked(newVehicle, 1) -- 1 means unlocked
             
-            -- Make sure the new vehicle is not locked in the state
+           
             Entity(newVehicle).state:set('locked', false, true)
             
-            -- Keep the database updated with the new vehicle
+           
             TriggerServerEvent('rsg-wagon:markWagonOut', modelName)
             
             RSGCore.Functions.Notify(Config.Texts.ReplaceSuccess, "success")
