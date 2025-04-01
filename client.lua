@@ -67,7 +67,7 @@ Citizen.CreateThread(function()
                 TriggerEvent('rsg-wagon:registerWithServer', vehicle)
                 
                 -- Mark this wagon as "out" in the database
-                TriggerServerEvent('rsg-wagon:markWagonOut', modelName)
+                --TriggerServerEvent('rsg-wagon:markWagonOut', modelName)
             end
         end
     end
@@ -427,7 +427,7 @@ AddEventHandler('rsg-wagon:completeRepair', function(wagon)
             Entity(newVehicle).state:set('locked', false, true)
             
            
-            TriggerServerEvent('rsg-wagon:markWagonOut', modelName)
+           -- TriggerServerEvent('rsg-wagon:markWagonOut', modelName)
             
             RSGCore.Functions.Notify(Config.Texts.ReplaceSuccess, "success")
         else
