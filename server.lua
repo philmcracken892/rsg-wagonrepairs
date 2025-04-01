@@ -17,12 +17,12 @@ AddEventHandler('rsg-wagon:registerSpawnedWagon', function(netId, modelName)
 end)
 
 
--- Replace the isWagonOwnedByPlayer function
+
 local function isWagonOwnedByPlayer(model, charId)
-    -- Remove the "isOut = 1" requirement completely
+   
     local result = MySQL.Sync.fetchAll('SELECT * FROM kd_wagons WHERE model = ? AND charid = ?', {model, charId})
     
-    -- Debug logging to see what's happening
+    
     
     
     if result and #result > 0 then
@@ -36,7 +36,7 @@ local function isWagonOwnedByPlayer(model, charId)
     return result and #result > 0
 end
 
--- Update the canAccessWagon function
+
 local function canAccessWagon(src, model)
     local Player = RSGCore.Functions.GetPlayer(src)
     if not Player then 
@@ -50,7 +50,7 @@ local function canAccessWagon(src, model)
     
 	
 
-    -- Check if the player owns this wagon
+   
     local hasAccess = isWagonOwnedByPlayer(model, citizenid)
    
     return hasAccess
@@ -90,7 +90,7 @@ AddEventHandler('rsg-wagon:checkOwnership', function(netId)
     
     
     
-    -- First check in our cache
+   
     local hasAccess = false
     if spawnedWagons[netId] and spawnedWagons[netId].owner == citizenid then
         
@@ -99,11 +99,11 @@ AddEventHandler('rsg-wagon:checkOwnership', function(netId)
        
         hasAccess = true
     else
-        -- If not in cache, check database
+       
         hasAccess = isWagonOwnedByPlayer(modelName, citizenid)
         
         if hasAccess then
-            -- Add to cache for future checks
+            
             spawnedWagons[netId] = {
                 owner = citizenid,
                 model = modelName
@@ -120,7 +120,7 @@ AddEventHandler('rsg-wagon:checkOwnership', function(netId)
         
         
         
-        -- Update the lock status on all clients
+       
         Entity(vehicle).state:set('locked', newLockStatus, true)
         TriggerClientEvent('rsg-wagon:setLockStatus', -1, netId, newLockStatus)
     else
@@ -131,7 +131,7 @@ end)
 
 
 
--- Add these to your server.lua file
+
 RegisterNetEvent('rsg-wagon:checkWheelPermission')
 AddEventHandler('rsg-wagon:checkWheelPermission', function(vehicle, wheelIndex, isReattach)
     local src = source
@@ -143,7 +143,7 @@ AddEventHandler('rsg-wagon:checkWheelPermission', function(vehicle, wheelIndex, 
     
     
     
-    -- If all checks pass, allow the wheel operation
+   
     if isReattach then
         TriggerClientEvent('rsg-wagon:allowWheelReattach', src, vehicle, wheelIndex)
     else
@@ -160,7 +160,7 @@ AddEventHandler('rsg-wagon:checkRepairRequirements', function(wagon)
         return
     end
     
-    -- Removed job requirement check
+    
     
     TriggerClientEvent('rsg-wagon:startRepair', src, wagon)
     TriggerClientEvent('rNotify:NotifyLeft', src, "Repair Started", "Success", "generic_textures", "tick", 4000)
@@ -181,7 +181,7 @@ AddEventHandler('rsg-wagon:finishRepair', function(wagon)
 end)
 
 
--- Modify this to ensure it properly marks wagons as "out"
+
 RegisterNetEvent('rsg-wagon:markWagonOut')
 AddEventHandler('rsg-wagon:markWagonOut', function(modelName)
     local src = source
@@ -201,7 +201,7 @@ AddEventHandler('rsg-wagon:markWagonOut', function(modelName)
     end
 end)
 
--- Function to mark a wagon as "in" (not out) in the database
+
 RegisterNetEvent('rsg-wagon:markWagonIn')
 AddEventHandler('rsg-wagon:markWagonIn', function(modelName)
     local src = source
@@ -225,7 +225,7 @@ AddEventHandler('rsg-wagon:addWheelToInventory', function(wheelIndex)
     end
 end)
 
--- Remove wheel from player inventory
+
 RegisterServerEvent('rsg-wagon:removeWheelFromInventory')
 AddEventHandler('rsg-wagon:removeWheelFromInventory', function()
     local src = source
@@ -238,7 +238,7 @@ AddEventHandler('rsg-wagon:removeWheelFromInventory', function()
     end
 end)
 
--- Callback to check if player has a wheel in inventory
+
 RSGCore.Functions.CreateCallback('rsg-wagon:checkWheelInventory', function(source, cb)
     local Player = RSGCore.Functions.GetPlayer(source)
     local hasWheel = false
