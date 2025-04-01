@@ -3,13 +3,6 @@
 Config = {}
 
 
-----Config.RepairJob = { "wagonmechanic", "stdenlaw", "blklaw", "rholaw", "vallaw", "strlaw"}
-
-
-
----Config.RepairItem = "wagonrepairkit"
-
-
 Config.RepairTime = 5000
 Config.TargetAllVehicles = true
 
